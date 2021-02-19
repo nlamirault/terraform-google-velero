@@ -14,7 +14,7 @@
 #####################################################################""
 # Provider
 
-variable project {
+variable "project" {
   type        = string
   description = "The project in which the resource belongs"
 }
@@ -24,17 +24,18 @@ variable project {
 
 # Bucket
 
-variable bucket_location {
+variable "bucket_location" {
   type        = string
   description = "The bucket location"
 }
 
-variable bucket_storage_class {
+variable "bucket_storage_class" {
+  type        = string
   description = "Bucket storage class."
   default     = "MULTI_REGIONAL"
 }
 
-variable bucket_labels {
+variable "bucket_labels" {
   description = "Map of labels to apply to the bucket"
   type        = map(string)
   default = {
@@ -44,17 +45,17 @@ variable bucket_labels {
 
 # Workload Identity
 
-variable namespace {
+variable "namespace" {
   type        = string
   description = "The Kubernetes namespace"
 }
 
-variable service_account {
+variable "service_account" {
   type        = string
   description = "The Kubernetes service account"
 }
 
-variable keyring_location {
+variable "keyring_location" {
   type        = string
   description = "The KMS keyring location"
 }
