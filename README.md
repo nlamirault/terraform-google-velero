@@ -24,7 +24,7 @@ These types of resources are supported:
 module "velero" {
   source  = "nlamirault/velero/google"
   version = "1.0.0"
-  
+
   project = var.project
 
   bucket_location      = var.bucket_location
@@ -87,4 +87,3 @@ keyring_location = "europe-west1"
 | Name | Description |
 |------|-------------|
 | service\_account | Service Account for Velero |
-
