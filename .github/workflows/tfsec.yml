@@ -24,7 +24,7 @@ on:
 
 jobs:
   tfsec:
-    name: velero
+    name: gcp
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
