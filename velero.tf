@@ -14,28 +14,28 @@
 
 # Doc: https://github.com/vmware-tanzu/velero-plugin-for-gcp#setup
 
-resource "google_service_account" "velero" {
-  account_id   = local.service_name
-  display_name = "Velero"
-  description  = "Created by Terraform"
+module "service_account" {
+  source  = "terraform-google-modules/service-accounts/google"
+  version = "4.0.3"
+
+  project_id = var.project
+
+  names = [
+    local.service
+  ]
 }
 
-resource "google_storage_bucket" "velero" {
-  name          = local.service_name
-  location      = var.bucket_location
-  storage_class = var.bucket_storage_class
-  labels        = var.bucket_labels
+module "custom_role" {
+  source  = "terraform-google-modules/iam/google//modules/custom_role_iam"
+  version = "7.3.0"
 
-  encryption {
-    default_kms_key_name = google_kms_crypto_key.velero.id
-  }
+  target_level = "project"
+  target_id    = var.project
+  role_id      = local.service
+  title        = title(local.service)
+  description  = format("Role for %s", local.service)
+  base_roles   = []
 
-  # Ensure the KMS crypto-key IAM binding for the service account exists prior to the
-  # bucket attempting to utilise the crypto-key.
-  depends_on = [google_kms_crypto_key_iam_binding.binding]
-}
-
-resource "google_project_iam_custom_role" "velero" {
   permissions = [
     "compute.disks.get",
     "compute.disks.create",
@@ -46,25 +46,64 @@ resource "google_project_iam_custom_role" "velero" {
     "compute.snapshots.delete",
     "compute.zones.get"
   ]
-  role_id = "velero"
-  title   = "Velero"
-}
 
-resource "google_project_iam_binding" "velero" {
-  role = google_project_iam_custom_role.velero.id
+  excluded_permissions = []
+
   members = [
-    format("serviceAccount:%s", google_service_account.velero.email)
+    format("serviceAccount:%s", module.service_account.email),
   ]
 }
 
-resource "google_storage_bucket_iam_member" "velero" {
-  bucket = google_storage_bucket.velero.name
-  role   = "roles/storage.objectAdmin"
-  member = format("serviceAccount:%s", google_service_account.velero.email)
+module "iam_service_accounts" {
+  source  = "terraform-google-modules/iam/google//modules/service_accounts_iam"
+  version = "7.3.0"
+
+  project = var.project
+  mode    = "authoritative"
+
+  service_accounts = [
+    module.service_account.email
+  ]
+
+  bindings = {
+    "roles/iam.workloadIdentityUser" = [
+      format("serviceAccount:%s.svc.id.goog[%s/%s]", var.project, var.namespace, var.service_account)
+    ]
+  }
 }
 
-resource "google_service_account_iam_member" "velero" {
-  role               = "roles/iam.workloadIdentityUser"
-  service_account_id = google_service_account.velero.name
-  member             = format("serviceAccount:%s.svc.id.goog[%s/%s]", var.project, var.namespace, var.service_account)
+module "bucket" {
+  source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
+  version = "3.0.0"
+
+  name            = format("%s-%s", var.project, local.service)
+  project_id      = var.project
+  location        = var.bucket_location
+  storage_class   = var.bucket_storage_class
+  labels          = var.bucket_labels
+  lifecycle_rules = var.lifecycle_rules
+
+  encryption = var.enable_kms ? {
+    default_kms_key_name = google_kms_crypto_key.velero[0].name
+  } : null
+
+  # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
+  # iam_members = [{
+  #   role   = "roles/storage.objectAdmin"
+  #   member = format("serviceAccount:%s", module.service_account.email)
+  # }]
+}
+
+module "iam_storage_buckets" {
+  source  = "terraform-google-modules/iam/google//modules/storage_buckets_iam"
+  version = "7.3.0"
+
+  storage_buckets = [module.bucket.bucket.name]
+  mode            = "authoritative"
+
+  bindings = {
+    "roles/storage.objectAdmin" = [
+      format("serviceAccount:%s", module.service_account.email)
+    ]
+  }
 }

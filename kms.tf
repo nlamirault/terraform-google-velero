@@ -13,13 +13,15 @@
 # limitations under the License.
 
 resource "google_kms_key_ring" "velero" {
-  name     = local.service_name
+  count    = var.enable_kms ? 1 : 0
+  name     = local.service
   location = var.keyring_location
 }
 
 resource "google_kms_crypto_key" "velero" {
-  name            = local.service_name
-  key_ring        = google_kms_key_ring.velero.id
+  count           = var.enable_kms ? 1 : 0
+  name            = local.service
+  key_ring        = google_kms_key_ring.velero[0].id
   rotation_period = "100000s"
 
   #   lifecycle {
@@ -31,8 +33,11 @@ data "google_storage_project_service_account" "gcs_account" {
 }
 
 resource "google_kms_crypto_key_iam_binding" "binding" {
-  crypto_key_id = google_kms_crypto_key.velero.id
+  count         = var.enable_kms ? 1 : 0
+  crypto_key_id = google_kms_crypto_key.velero[0].id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 
-  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
+  members = [
+    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+  ]
 }
