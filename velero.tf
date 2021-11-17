@@ -25,14 +25,14 @@ module "service_account" {
   ]
 }
 
-module "custom" {
+module "custom_role" {
   source  = "terraform-google-modules/iam/google//modules/custom_role_iam"
   version = "7.3.0"
 
   target_level = "project"
   target_id    = var.project
   role_id      = local.service
-  title        = local.service
+  title        = title(local.service)
   description  = format("Role for %s", local.service)
   base_roles   = []
 
@@ -49,33 +49,27 @@ module "custom" {
 
   excluded_permissions = []
 
-  members = []
-  # members = [
-  #   format("serviceAccount:%s", module.service_account.email),
-  # ]
+  members = [
+    format("serviceAccount:%s", module.service_account.email),
+  ]
 }
 
-module "iam" {
+module "iam_service_accounts" {
   source  = "terraform-google-modules/iam/google//modules/service_accounts_iam"
   version = "7.3.0"
 
   project = var.project
+  mode    = "authoritative"
 
   service_accounts = [
     module.service_account.email
   ]
-  mode = "authoritative"
 
   bindings = {
-    "roles/velero" = [
-      format("serviceAccount:%s", module.service_account.email),
-    ]
     "roles/iam.workloadIdentityUser" = [
       format("serviceAccount:%s.svc.id.goog[%s/%s]", var.project, var.namespace, var.service_account)
     ]
   }
-
-  # depends_on = [module.service_account]
 }
 
 module "bucket" {
@@ -93,10 +87,23 @@ module "bucket" {
     default_kms_key_name = google_kms_crypto_key.velero[0].name
   } : null
 
-  iam_members = [{
-    role   = "roles/storage.objectAdmin"
-    member = format("serviceAccount:%s", module.service_account.email)
-  }]
+  # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
+  # iam_members = [{
+  #   role   = "roles/storage.objectAdmin"
+  #   member = format("serviceAccount:%s", module.service_account.email)
+  # }]
+}
 
-  # depends_on = [module.service_account]
+module "iam_storage_buckets" {
+  source  = "terraform-google-modules/iam/google//modules/storage_buckets_iam"
+  version = "7.3.0"
+
+  storage_buckets = [module.bucket.bucket.name]
+  mode            = "authoritative"
+
+  bindings = {
+    "roles/storage.objectAdmin" = [
+      format("serviceAccount:%s", module.service_account.email)
+    ]
+  }
 }

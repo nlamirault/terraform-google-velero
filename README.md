@@ -67,8 +67,9 @@ keyring_location = "europe-west1"
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_bucket"></a> [bucket](#module\_bucket) | terraform-google-modules/cloud-storage/google//modules/simple_bucket | 3.0.0 |
-| <a name="module_custom"></a> [custom](#module\_custom) | terraform-google-modules/iam/google//modules/custom_role_iam | 7.3.0 |
-| <a name="module_iam"></a> [iam](#module\_iam) | terraform-google-modules/iam/google//modules/service_accounts_iam | 7.3.0 |
+| <a name="module_custom_role"></a> [custom\_role](#module\_custom\_role) | terraform-google-modules/iam/google//modules/custom_role_iam | 7.3.0 |
+| <a name="module_iam_service_accounts"></a> [iam\_service\_accounts](#module\_iam\_service\_accounts) | terraform-google-modules/iam/google//modules/service_accounts_iam | 7.3.0 |
+| <a name="module_iam_storage_buckets"></a> [iam\_storage\_buckets](#module\_iam\_storage\_buckets) | terraform-google-modules/iam/google//modules/storage_buckets_iam | 7.3.0 |
 | <a name="module_service_account"></a> [service\_account](#module\_service\_account) | terraform-google-modules/service-accounts/google | 4.0.3 |
 
 ## Resources
