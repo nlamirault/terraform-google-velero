@@ -50,7 +50,13 @@ module "custom_role" {
   excluded_permissions = []
 
   members = [
-    format("serviceAccount:%s", module.service_account.email),
+    # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
+    # format("serviceAccount:%s", module.service_account.email),
+    format("%s@%s.iam.gserviceaccount.com", local.service, var.project),
+  ]
+
+  depends_on = [
+    module.service_account
   ]
 }
 
@@ -62,7 +68,9 @@ module "iam_service_accounts" {
   mode    = "authoritative"
 
   service_accounts = [
-    module.service_account.email
+    # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
+    # module.service_account.email
+    format("%s@%s.iam.gserviceaccount.com", local.service, var.project),
   ]
 
   bindings = {
@@ -70,6 +78,10 @@ module "iam_service_accounts" {
       format("serviceAccount:%s.svc.id.goog[%s/%s]", var.project, var.namespace, var.service_account)
     ]
   }
+
+  depends_on = [
+    module.service_account
+  ]
 }
 
 module "bucket" {
@@ -103,7 +115,12 @@ module "iam_storage_buckets" {
 
   bindings = {
     "roles/storage.objectAdmin" = [
-      format("serviceAccount:%s", module.service_account.email)
+      # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
+      format("serviceAccount:%s@%s.iam.gserviceaccount.com", local.service, var.project),
     ]
   }
+
+  depends_on = [
+    module.service_account
+  ]
 }
