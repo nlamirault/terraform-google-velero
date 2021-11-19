@@ -52,7 +52,7 @@ module "custom_role" {
   members = [
     # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
     # format("serviceAccount:%s", module.service_account.email),
-    format("%s@%s.iam.gserviceaccount.com", local.service, var.project),
+    format("serviceAccount:%s@%s.iam.gserviceaccount.com", local.service, var.project),
   ]
 
   depends_on = [
