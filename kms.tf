@@ -12,32 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "google_kms_key_ring" "velero" {
-  count    = var.enable_kms ? 1 : 0
-  name     = local.service
-  location = var.keyring_location
-}
-
-resource "google_kms_crypto_key" "velero" {
-  count           = var.enable_kms ? 1 : 0
-  name            = local.service
-  key_ring        = google_kms_key_ring.velero[0].id
-  rotation_period = "100000s"
-
-  #   lifecycle {
-  #     prevent_destroy = true
-  #   }
-}
-
 data "google_storage_project_service_account" "gcs_account" {
 }
 
-resource "google_kms_crypto_key_iam_binding" "binding" {
-  count         = var.enable_kms ? 1 : 0
-  crypto_key_id = google_kms_crypto_key.velero[0].id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+module "kms" {
+  source  = "terraform-google-modules/kms/google"
+  version = "2.1.0"
 
-  members = [
-    "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+  count = var.enable_kms ? 1 : 0
+
+  project_id     = var.project
+  location       = var.keyring_location
+  keyring        = local.service
+  keys           = var.keys
+  set_owners_for = var.keys
+  owners         = var.owners
+
+  encrypters = [
+    data.google_storage_project_service_account.gcs_account.email_address
   ]
+  decrypters = [
+    data.google_storage_project_service_account.gcs_account.email_address
+  ]
+
+  labels = var.kms_labels
 }

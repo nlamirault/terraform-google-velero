@@ -96,7 +96,7 @@ module "bucket" {
   lifecycle_rules = var.lifecycle_rules
 
   encryption = var.enable_kms ? {
-    default_kms_key_name = google_kms_crypto_key.velero[0].id
+    default_kms_key_name = keys(module.kms.keys)[0]
   } : null
 
   # https://github.com/terraform-google-modules/terraform-google-cloud-storage/issues/142
