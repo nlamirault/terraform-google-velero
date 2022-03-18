@@ -101,4 +101,5 @@ keyring_location = "europe-west1"
 | Name | Description |
 |------|-------------|
 | <a name="output_service_account"></a> [service\_account](#output\_service\_account) | Service Account for Velero |
+| <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | Velero Bucket name |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
