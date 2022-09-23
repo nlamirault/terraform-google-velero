@@ -86,7 +86,7 @@ module "iam_service_accounts" {
 
 module "bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "3.3.0"
+  version = "3.4.0"
 
   name            = format("%s-%s", var.project, local.service)
   project_id      = var.project
