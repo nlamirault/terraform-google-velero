@@ -48,6 +48,22 @@
       "matchUpdateTypes": ["patch"],
       "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "area/terraform", "dependency/terraform", "priority/low", "size/xs"]
     },
+     // Labels for TFlint Plugin
+    {
+      "matchManagers": ["tflint-plugin"],
+      "updateTypes": ["major"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "area/terraform", "dependency/terraform", "priority/high", "size/xs"]
+    },
+    {
+      "matchManagers": ["tflint-plugin"],
+      "updateTypes": ["minor"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "area/terraform", "dependency/terraform", "priority/medium", "size/xs"]
+    },
+    {
+      "matchManagers": ["tflint-plugin"],
+      "updateTypes": ["patch"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "area/terraform", "dependency/terraform", "priority/low", "size/xs"]
+    },
     // Labels for Docker
     {
       "datasources": ["docker"],
@@ -79,6 +95,38 @@
       "datasources": ["action"],
       "updateTypes": ["patch"],
       "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "area/github", "dependency/github", "priority/low", "size/xs"]
+    },
+    // Labels for Github Tags
+    {
+      "datasources": ["github-tags"],
+      "updateTypes": ["major"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "priority/high", "size/xs"]
+    },
+    {
+      "datasources": ["github-tags"],
+      "updateTypes": ["minor"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "priority/medium", "size/xs"]
+    },
+    {
+      "datasources": ["github-tags"],
+      "updateTypes": ["patch"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "priority/low", "size/xs"]
+    },
+    // Labels for PreCommit
+    {
+      "matchPaths": [".pre-commit-config.yaml"],
+      "matchUpdateTypes": ["major"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "dependency/github", "priority/high", "size/xs"]
+    },
+    {
+      "matchPaths": [".pre-commit-config.yaml"],
+      "matchUpdateTypes": ["minor"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "dependency/github", "priority/medium", "size/xs"]
+    },
+    {
+      "matchPaths": [".pre-commit-config.yaml"],
+      "matchUpdateTypes": ["patch"],
+      "labels": ["kind/renovate", "lifecycle/active", "status/review_needed", "dependency/github", "priority/low", "size/xs"]
     },
   ]
 }
