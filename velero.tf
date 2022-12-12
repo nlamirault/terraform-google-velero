@@ -37,6 +37,11 @@ module "custom_role" {
   base_roles   = []
 
   permissions = [
+    "iam.serviceAccounts.signBlob",
+    "storage.objects.create",
+    "storage.objects.delete",
+    "storage.objects.get",
+    "storage.objects.list",
     "compute.disks.get",
     "compute.disks.create",
     "compute.disks.createSnapshot",
