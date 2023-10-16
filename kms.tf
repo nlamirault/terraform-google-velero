@@ -18,7 +18,7 @@ data "google_storage_project_service_account" "gcs_account" {
 
 module "kms" {
   source  = "terraform-google-modules/kms/google"
-  version = "2.2.2"
+  version = "2.2.3"
 
   count = var.enable_kms ? 1 : 0
 
