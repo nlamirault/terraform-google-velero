@@ -45,6 +45,7 @@ module "custom_role" {
     "compute.disks.get",
     "compute.disks.create",
     "compute.disks.createSnapshot",
+    "compute.projects.get",
     "compute.snapshots.get",
     "compute.snapshots.create",
     "compute.snapshots.useReadOnly",
