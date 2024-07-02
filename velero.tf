@@ -45,6 +45,7 @@ module "custom_role" {
     "compute.disks.get",
     "compute.disks.create",
     "compute.disks.createSnapshot",
+    "compute.projects.get",
     "compute.snapshots.get",
     "compute.snapshots.create",
     "compute.snapshots.useReadOnly",
@@ -91,7 +92,7 @@ module "iam_service_accounts" {
 
 module "bucket" {
   source  = "terraform-google-modules/cloud-storage/google//modules/simple_bucket"
-  version = "5.0.0"
+  version = "6.0.0"
 
   name            = format("%s-%s", var.project, local.service)
   project_id      = var.project
